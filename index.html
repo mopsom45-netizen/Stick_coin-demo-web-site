@@ -28,13 +28,13 @@
 
         /* Рулетка */
         .r-wrap { position: relative; width: 200px; height: 200px; margin: 20px auto; }
-        .r-box { width: 100%; height: 100%; border-radius: 50%; border: 5px solid #1a1a1a; transition: 5s cubic-bezier(0.1, 0, 0.1, 1); background: conic-gradient(var(--r) 0 170deg, var(--g) 170deg 190deg, var(--p) 190deg 360deg); }
+        .r-box { width: 100%; height: 100%; border-radius: 50%; border: 5px solid #1a1a1a; transition: 5s cubic-bezier(0.1, 0, 0.1, 1); background: conic-gradient(var(--r) 0 170deg, var(--g) 170deg 190deg, #000 190deg); }
         .r-box.spin { transform: rotate(1800deg); }
         .r-wrap::after { content: '▼'; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); color: var(--gold); font-size: 20px; z-index: 5; }
 
         /* Хрестики-Нолики */
         .ttt { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; max-width: 210px; margin: 15px auto; }
-        .c { aspect-ratio: 1; background: #000; border: 1px solid #222; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; border-radius: 5px; cursor: pointer; transition: 0.2s; }
+        .c { aspect-ratio: 1; background: #000; border: 1px solid #222; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; border-radius: 5px; cursor: pointer; }
         .c:hover { border-color: var(--p); }
 
         /* Чат */
@@ -49,13 +49,22 @@
         .tab span { display: block; font-size: 8px; text-transform: uppercase; margin-top: 4px; }
 
         /* Майнінг */
-        .orb { width: 160px; height: 160px; border-radius: 50%; border: 4px solid var(--g); margin: 30px auto; display: flex; align-items: center; justify-content: center; font-weight: 900; cursor: pointer; font-size: 14px; text-align: center; padding: 10px; transition: 0.3s; }
+        .orb { width: 160px; height: 160px; border-radius: 50%; border: 4px solid var(--g); margin: 30px auto; display: flex; align-items: center; justify-content: center; font-weight: 900; cursor: pointer; transition: 0.3s; font-size: 14px; text-align: center; }
         .orb:hover { transform: scale(1.05); }
         .orb.on { border-color: var(--r); animation: pulse 2s infinite; background: rgba(255, 51, 102, 0.1); }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 
-        .friend-item { background: #000; padding: 10px; border-radius: 8px; margin: 8px 0; display: flex; justify-content: space-between; align-items: center; border: 1px solid #222; }
+        .friend-item { background: #000; padding: 10px; border-radius: 8px; margin: 8px 0; display: flex; justify-content: space-between; align-items: center; border: 1px solid #222; cursor: pointer; transition: 0.2s; }
+        .friend-item:hover { border-color: var(--p); }
         .friend-item button { width: 60px; padding: 8px; font-size: 11px; }
+        .friend-item-avatar { width: 35px; height: 35px; border-radius: 50%; border: 1px solid var(--p); margin-right: 10px; }
+
+        /* Список пошуку користувачів */
+        .user-search-results { background: #000; border: 1px solid #333; border-radius: 8px; max-height: 150px; overflow-y: auto; margin-top: 10px; }
+        .user-result { padding: 10px; border-bottom: 1px solid #222; display: flex; align-items: center; cursor: pointer; transition: 0.2s; }
+        .user-result:hover { background: #0a0a0a; border-left: 3px solid var(--p); }
+        .user-result img { width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; }
+        .user-result-name { flex: 1; font-size: 12px; }
 
         /* Модальні стилі */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100; align-items: center; justify-content: center; }
@@ -73,6 +82,20 @@
 
         .auth-form { display: none; }
         .auth-form.active { display: block; }
+
+        /* Чати з друзями */
+        .chat-container { display: flex; flex-direction: column; height: 100%; }
+        .chat-header { display: flex; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #333; }
+        .chat-header img { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; border: 2px solid var(--p); }
+        .chat-header-info { flex: 1; }
+        .chat-header-name { font-weight: 900; color: var(--p); }
+        .chat-header-back { cursor: pointer; font-size: 18px; }
+
+        .chat-messages { flex: 1; overflow-y: auto; margin-bottom: 10px; background: #000; border-radius: 8px; padding: 10px; }
+        .chat-msg { margin-bottom: 8px; padding: 8px; border-radius: 5px; font-size: 12px; }
+        .chat-msg.own { background: rgba(7, 255, 255, 0.2); margin-left: 20px; text-align: right; }
+        .chat-msg.other { background: rgba(0, 255, 136, 0.1); margin-right: 20px; }
+        .chat-msg-sender { font-size: 10px; color: #888; margin-bottom: 2px; }
     </style>
 </head>
 <body>
@@ -112,16 +135,22 @@
 
     <div id="tab1" class="view active">
         <h1 id="v-bal" style="text-align:center; font-size:3.5rem; margin:30px 0; font-weight:900;">0.0000</h1>
-        <div id="mbtn" class="orb" onclick="toggleMine()">START MINING</div>
+        <div id="mbtn" class="orb" onclick="toggleMine()">START<br>MINING</div>
         <div style="text-align:center; font-size:12px; color:#555;">+0.0001 STICK/сек</div>
     </div>
 
+    <!-- Вкладка TRANSFER -->
     <div id="tab2" class="view">
-        <h3 style="color:var(--p); margin-top:0;">SECURE CHAT</h3>
-        <div id="chat" class="glass"></div>
-        <div style="display:flex; gap:8px;">
-            <input type="text" id="msg-in" placeholder="Повідомлення...">
-            <button class="btn" style="width:70px; padding:12px;" onclick="sendMsg()">></button>
+        <h3 style="color:var(--p); margin-top:0;">TRANSFER STICK</h3>
+        <div class="glass">
+            <label style="font-size:10px; color:var(--p);">ЛОГІН ОТРИМУВАЧА</label>
+            <input type="text" id="transfer-user" placeholder="Введіть логін..." onkeyup="searchTransferUser()">
+            <div id="transfer-search-results" class="user-search-results" style="display:none;"></div>
+            <div id="transfer-user-preview" style="margin-top:10px;"></div>
+            
+            <label style="font-size:10px; color:var(--p); margin-top:15px;">СУМА</label>
+            <input type="number" id="transfer-amount" placeholder="0.0000" min="0.0001" step="0.0001">
+            <button class="btn" onclick="transferCoins()" style="margin-top:15px;">ВІДПРАВИТИ</button>
         </div>
     </div>
 
@@ -150,14 +179,47 @@
         </div>
     </div>
 
+    <!-- Вкладка FRIENDS -->
     <div id="tab4" class="view">
-        <h3>SQUAD</h3>
+        <h3 style="margin-top:0;">ДРУЗІ</h3>
         <div style="display:flex; gap:8px;">
-            <input type="text" id="f-u" placeholder="Логін...">
-            <button class="btn" style="width:80px; padding:12px;" onclick="addF()">ADD</button>
+            <input type="text" id="f-u" placeholder="Логін..." onkeyup="searchFriendUser()">
+            <button class="btn" style="width:80px; padding:12px;" onclick="sendFriendRequest()">ADD</button>
         </div>
-        <div id="f-list" style="margin-top:20px;"></div>
+        <div id="friend-search-results" class="user-search-results" style="display:none; margin-top:10px;"></div>
+
+        <h3 style="margin-top:20px; color:var(--g);">ЗАПИТИ</h3>
+        <div id="f-requests" style="margin-bottom:20px;"></div>
+
+        <h3 style="margin-top:20px; color:var(--g);">МЕНІ ДРУЗІ</h3>
+        <div id="f-list" style="margin-top:10px;"></div>
     </div>
+
+    <!-- Приватний чат з другом -->
+    <div id="tab4-chat" class="view">
+        <div class="chat-container">
+            <div class="chat-header">
+                <span class="chat-header-back" onclick="backToFriendsList()">◀ НАЗАД</span>
+                <img id="chat-friend-avatar" src="" alt="avatar" style="margin-left: 10px;">
+                <div class="chat-header-info">
+                    <div class="chat-header-name" id="chat-friend-name">---</div>
+                </div>
+            </div>
+            <div class="chat-messages" id="private-chat-messages"></div>
+            <div style="display:flex; gap:8px;">
+                <input type="text" id="private-msg-in" placeholder="Повідомлення..." onkeypress="handlePrivateChatKeypress(event)">
+                <button class="btn" style="width:70px; padding:12px;" onclick="sendPrivateMsg()">></button>
+            </div>
+        </div>
+    </div>
+
+    <nav>
+        <div class="tab active" onclick="switchTab(1)">⛏️<span>Mining</span></div>
+        <div class="tab" onclick="switchTab(2)">💳<span>Transfer</span></div>
+        <div class="tab" onclick="switchTab(3)">🎰<span>Casino</span></div>
+        <div class="tab" onclick="switchTab(4)">👥<span>Friends</span></div>
+        <div class="tab" onclick="switchTab(5)">⚙️<span>Config</span></div>
+    </nav>
 
     <div id="tab5" class="view">
         <h3>OS CONFIG</h3>
@@ -171,14 +233,6 @@
             <button class="btn" onclick="logout()" style="background:var(--r); color:#fff; margin-top:10px;">ВИХІД</button>
         </div>
     </div>
-
-    <nav>
-        <div class="tab active" onclick="switchTab(1)">⛏️<span>Mining</span></div>
-        <div class="tab" onclick="switchTab(2)">💬<span>Chat</span></div>
-        <div class="tab" onclick="switchTab(3)">🎰<span>Casino</span></div>
-        <div class="tab" onclick="switchTab(4)">👥<span>Squad</span></div>
-        <div class="tab" onclick="switchTab(5)">⚙️<span>Config</span></div>
-    </nav>
 </div>
 
 <!-- Модаль для зміни пароля -->
@@ -206,9 +260,11 @@
         balance: 0,
         mining: false,
         friends: [],
-        messages: [],
+        friendRequests: [],
+        privateChatMessages: {},
         tttCurrentPlayer: 'X',
-        tttBoard: ['', '', '', '', '', '', '', '', '']
+        tttBoard: ['', '', '', '', '', '', '', '', ''],
+        currentChatFriend: null
     };
 
     let mineInterval = null;
@@ -256,7 +312,10 @@
         allUsers[username] = {
             password: password,
             balance: 0,
-            avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + username
+            avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + username,
+            friends: [],
+            friendRequests: [],
+            privateChatMessages: {}
         };
 
         localStorage.setItem('stick_users', JSON.stringify(allUsers));
@@ -292,6 +351,9 @@
         gameState.user = username;
         gameState.password = password;
         gameState.balance = allUsers[username].balance;
+        gameState.friends = allUsers[username].friends || [];
+        gameState.friendRequests = allUsers[username].friendRequests || [];
+        gameState.privateChatMessages = allUsers[username].privateChatMessages || {};
         
         document.getElementById('auth-scr').style.display = 'none';
         document.getElementById('main-scr').style.display = 'flex';
@@ -301,7 +363,8 @@
         document.getElementById('username-cfg').value = username;
         document.getElementById('avatar-url').value = allUsers[username].avatar;
         
-        addMessage('SYSTEM', `Ласкаво просимо, ${username}! 🎉`);
+        updateFriendsList();
+        updateFriendRequestsList();
     }
 
     // Оновлення заголовка
@@ -324,7 +387,7 @@
                 if (!gameState.mining) {
                     clearInterval(mineInterval);
                     btn.classList.remove('on');
-                    btn.textContent = 'START MINING';
+                    btn.textContent = 'START\nMINING';
                     return;
                 }
                 gameState.balance += 0.0001;
@@ -332,29 +395,331 @@
             }, 1000);
         } else {
             btn.classList.remove('on');
-            btn.textContent = 'START MINING';
+            btn.textContent = 'START\nMINING';
             clearInterval(mineInterval);
         }
     }
 
-    // Чат
-    function sendMsg() {
-        const msgInput = document.getElementById('msg-in');
-        const msg = msgInput.value.trim();
+    // TRANSFER
+    function searchTransferUser() {
+        const input = document.getElementById('transfer-user').value.trim();
+        const resultsDiv = document.getElementById('transfer-search-results');
         
-        if (!msg) return;
-        
-        addMessage(gameState.user, msg);
-        msgInput.value = '';
+        if (!input) {
+            resultsDiv.style.display = 'none';
+            document.getElementById('transfer-user-preview').innerHTML = '';
+            return;
+        }
+
+        const results = Object.keys(allUsers).filter(u => 
+            u.toLowerCase().includes(input.toLowerCase()) && u !== gameState.user
+        );
+
+        if (results.length === 0) {
+            resultsDiv.style.display = 'none';
+            document.getElementById('transfer-user-preview').innerHTML = '<p style="color:var(--r); font-size:12px;">Користувача не знайдено</p>';
+            return;
+        }
+
+        resultsDiv.innerHTML = results.map(user => `
+            <div class="user-result" onclick="selectTransferUser('${user}')">
+                <img src="${allUsers[user].avatar}" alt="avatar" style="width:30px; height:30px; border-radius:50%; margin-right:10px;">
+                <div style="font-size:12px;">${user}</div>
+            </div>
+        `).join('');
+        resultsDiv.style.display = 'block';
     }
 
-    function addMessage(sender, text) {
-        const chatDiv = document.getElementById('chat');
-        const msgEl = document.createElement('div');
-        msgEl.className = 'm';
-        msgEl.innerHTML = `<b>${sender}:</b> ${text}`;
-        chatDiv.appendChild(msgEl);
+    function selectTransferUser(username) {
+        document.getElementById('transfer-user').value = username;
+        document.getElementById('transfer-search-results').style.display = 'none';
+        document.getElementById('transfer-user-preview').innerHTML = `
+            <div style="text-align:center; padding:10px; background:#000; border-radius:8px; border:1px solid #333;">
+                <img src="${allUsers[username].avatar}" alt="avatar" style="width:50px; height:50px; border-radius:50%; border:2px solid var(--p); margin-bottom:8px;">
+                <div style="color:var(--p); font-weight:900; font-size:12px;">${username}</div>
+            </div>
+        `;
+    }
+
+    function transferCoins() {
+        const recipient = document.getElementById('transfer-user').value.trim();
+        const amount = parseFloat(document.getElementById('transfer-amount').value);
+
+        if (!recipient) {
+            alert('Оберіть отримувача!');
+            return;
+        }
+
+        if (!allUsers[recipient]) {
+            alert('Користувача не існує!');
+            return;
+        }
+
+        if (recipient === gameState.user) {
+            alert('Ви не можете відправити монети собі!');
+            return;
+        }
+
+        if (!amount || amount <= 0) {
+            alert('Введіть коректну суму!');
+            return;
+        }
+
+        if (amount > gameState.balance) {
+            alert('Недостатньо коштів!');
+            return;
+        }
+
+        gameState.balance -= amount;
+        allUsers[recipient].balance += amount;
+
+        saveUserData();
+        localStorage.setItem('stick_users', JSON.stringify(allUsers));
+
+        alert(`✓ Успішно відправлено ${amount.toFixed(4)} STICK користувачу ${recipient}!`);
+        document.getElementById('transfer-user').value = '';
+        document.getElementById('transfer-amount').value = '';
+        document.getElementById('transfer-user-preview').innerHTML = '';
+        updateHeader();
+    }
+
+    // ДРУЗІ - ЗАПИТИ
+    function searchFriendUser() {
+        const input = document.getElementById('f-u').value.trim();
+        const resultsDiv = document.getElementById('friend-search-results');
+        
+        if (!input) {
+            resultsDiv.style.display = 'none';
+            return;
+        }
+
+        const results = Object.keys(allUsers).filter(u => 
+            u.toLowerCase().includes(input.toLowerCase()) && 
+            u !== gameState.user && 
+            !gameState.friends.includes(u)
+        );
+
+        if (results.length === 0) {
+            resultsDiv.style.display = 'none';
+            return;
+        }
+
+        resultsDiv.innerHTML = results.map(user => `
+            <div class="user-result" onclick="selectFriendToAdd('${user}')">
+                <img src="${allUsers[user].avatar}" alt="avatar">
+                <div class="user-result-name">${user}</div>
+            </div>
+        `).join('');
+        resultsDiv.style.display = 'block';
+    }
+
+    function selectFriendToAdd(username) {
+        document.getElementById('f-u').value = username;
+        document.getElementById('friend-search-results').style.display = 'none';
+    }
+
+    function sendFriendRequest() {
+        const friendName = document.getElementById('f-u').value.trim();
+
+        if (!friendName) {
+            alert('Введіть логін!');
+            return;
+        }
+
+        if (!allUsers[friendName]) {
+            alert('Користувача не існує!');
+            return;
+        }
+
+        if (friendName === gameState.user) {
+            alert('Ви не можете додати себе в друзі!');
+            return;
+        }
+
+        if (gameState.friends.includes(friendName)) {
+            alert('Цей користувач уже ваш друг!');
+            return;
+        }
+
+        if (!allUsers[friendName].friendRequests) {
+            allUsers[friendName].friendRequests = [];
+        }
+
+        if (allUsers[friendName].friendRequests.includes(gameState.user)) {
+            alert('Запит уже відправлено!');
+            return;
+        }
+
+        allUsers[friendName].friendRequests.push(gameState.user);
+        localStorage.setItem('stick_users', JSON.stringify(allUsers));
+
+        alert(`✓ Запит на дружбу відправлено користувачу ${friendName}!`);
+        document.getElementById('f-u').value = '';
+    }
+
+    function updateFriendRequestsList() {
+        const requestsDiv = document.getElementById('f-requests');
+        requestsDiv.innerHTML = '';
+
+        if (gameState.friendRequests.length === 0) {
+            requestsDiv.innerHTML = '<p style="font-size:11px; color:#555; text-align:center;">немає запитів</p>';
+            return;
+        }
+
+        gameState.friendRequests.forEach((friend, idx) => {
+            const div = document.createElement('div');
+            div.className = 'friend-item';
+            div.innerHTML = `
+                <div style="display:flex; align-items:center; flex:1;">
+                    <img src="${allUsers[friend].avatar}" alt="avatar" class="friend-item-avatar">
+                    <span style="font-size:12px;">${friend}</span>
+                </div>
+                <button class="btn" onclick="acceptFriendRequest(${idx})" style="width:50px; background:var(--g); color:#000; font-size:10px; padding:6px;">✓</button>
+                <button class="btn" onclick="rejectFriendRequest(${idx})" style="width:50px; background:var(--r); color:#fff; font-size:10px; padding:6px; margin-left:5px;">✕</button>
+            `;
+            requestsDiv.appendChild(div);
+        });
+    }
+
+    function acceptFriendRequest(idx) {
+        const friend = gameState.friendRequests[idx];
+        gameState.friends.push(friend);
+        gameState.friendRequests.splice(idx, 1);
+
+        allUsers[friend].friends = allUsers[friend].friends || [];
+        allUsers[friend].friends.push(gameState.user);
+
+        gameState.privateChatMessages[friend] = gameState.privateChatMessages[friend] || [];
+        if (!allUsers[friend].privateChatMessages) {
+            allUsers[friend].privateChatMessages = {};
+        }
+        allUsers[friend].privateChatMessages[gameState.user] = allUsers[friend].privateChatMessages[gameState.user] || [];
+
+        saveUserData();
+        localStorage.setItem('stick_users', JSON.stringify(allUsers));
+
+        updateFriendsList();
+        updateFriendRequestsList();
+        alert(`✓ Ви додали ${friend} в друзі!`);
+    }
+
+    function rejectFriendRequest(idx) {
+        gameState.friendRequests.splice(idx, 1);
+        saveUserData();
+        updateFriendRequestsList();
+    }
+
+    function updateFriendsList() {
+        const listDiv = document.getElementById('f-list');
+        listDiv.innerHTML = '';
+        
+        if (gameState.friends.length === 0) {
+            listDiv.innerHTML = '<p style="font-size:11px; color:#555; text-align:center;">у вас немає друзів</p>';
+            return;
+        }
+
+        gameState.friends.forEach((friend, idx) => {
+            const div = document.createElement('div');
+            div.className = 'friend-item';
+            div.style.cursor = 'pointer';
+            div.innerHTML = `
+                <div style="display:flex; align-items:center; flex:1;" onclick="openPrivateChat('${friend}')">
+                    <img src="${allUsers[friend].avatar}" alt="avatar" class="friend-item-avatar">
+                    <span style="font-size:12px;">${friend}</span>
+                </div>
+                <button class="btn" onclick="removeFriend(${idx})" style="width:50px; background:var(--r); padding:6px; font-size:10px;">✕</button>
+            `;
+            listDiv.appendChild(div);
+        });
+    }
+
+    function removeFriend(idx) {
+        const friend = gameState.friends[idx];
+        gameState.friends.splice(idx, 1);
+        
+        if (allUsers[friend].friends) {
+            const friendIdx = allUsers[friend].friends.indexOf(gameState.user);
+            if (friendIdx > -1) {
+                allUsers[friend].friends.splice(friendIdx, 1);
+            }
+        }
+
+        saveUserData();
+        localStorage.setItem('stick_users', JSON.stringify(allUsers));
+        updateFriendsList();
+    }
+
+    // ПРИВАТНІ ЧАТИ
+    function openPrivateChat(friendName) {
+        gameState.currentChatFriend = friendName;
+        
+        if (!gameState.privateChatMessages[friendName]) {
+            gameState.privateChatMessages[friendName] = [];
+        }
+
+        document.getElementById('tab4').classList.remove('active');
+        document.getElementById('tab4-chat').classList.add('active');
+        document.getElementById('chat-friend-name').textContent = friendName;
+        document.getElementById('chat-friend-avatar').src = allUsers[friendName].avatar;
+
+        displayPrivateChat();
+    }
+
+    function backToFriendsList() {
+        gameState.currentChatFriend = null;
+        document.getElementById('tab4-chat').classList.remove('active');
+        document.getElementById('tab4').classList.add('active');
+    }
+
+    function displayPrivateChat() {
+        const chatDiv = document.getElementById('private-chat-messages');
+        chatDiv.innerHTML = '';
+
+        const messages = gameState.privateChatMessages[gameState.currentChatFriend] || [];
+        messages.forEach(msg => {
+            const msgEl = document.createElement('div');
+            msgEl.className = `chat-msg ${msg.sender === gameState.user ? 'own' : 'other'}`;
+            msgEl.innerHTML = `<div class="chat-msg-sender">${msg.sender}</div>${msg.text}`;
+            chatDiv.appendChild(msgEl);
+        });
+
         chatDiv.scrollTop = chatDiv.scrollHeight;
+    }
+
+    function sendPrivateMsg() {
+        const input = document.getElementById('private-msg-in');
+        const msg = input.value.trim();
+
+        if (!msg) return;
+
+        const message = {
+            sender: gameState.user,
+            text: msg,
+            timestamp: Date.now()
+        };
+
+        gameState.privateChatMessages[gameState.currentChatFriend].push(message);
+
+        if (!allUsers[gameState.currentChatFriend].privateChatMessages) {
+            allUsers[gameState.currentChatFriend].privateChatMessages = {};
+        }
+        if (!allUsers[gameState.currentChatFriend].privateChatMessages[gameState.user]) {
+            allUsers[gameState.currentChatFriend].privateChatMessages[gameState.user] = [];
+        }
+
+        allUsers[gameState.currentChatFriend].privateChatMessages[gameState.user].push(message);
+        
+        saveUserData();
+        localStorage.setItem('stick_users', JSON.stringify(allUsers));
+
+        input.value = '';
+        displayPrivateChat();
+    }
+
+    function handlePrivateChatKeypress(event) {
+        if (event.key === 'Enter') {
+            sendPrivateMsg();
+        }
     }
 
     // Рулетка
@@ -388,9 +753,9 @@
             if (winColor === color) {
                 const winAmount = betAmount * (color === 'green' ? 14 : 2);
                 gameState.balance += winAmount;
-                addMessage('CASINO', `🎉 ВИ ВИГРАЛИ ${winAmount.toFixed(4)} STICK!`);
+                alert(`🎉 ВИ ВИГРАЛИ ${winAmount.toFixed(4)} STICK!`);
             } else {
-                addMessage('CASINO', `❌ Ви програли ${betAmount.toFixed(4)} STICK`);
+                alert(`❌ Ви програли ${betAmount.toFixed(4)} STICK`);
             }
             
             updateHeader();
@@ -416,7 +781,7 @@
         this.textContent = gameState.tttCurrentPlayer;
         
         if (checkTTTWin()) {
-            addMessage('TTT', `🏆 ${gameState.tttCurrentPlayer} переміг!`);
+            alert(`🏆 ${gameState.tttCurrentPlayer} переміг!`);
             setTimeout(resetTicTacToe, 1000);
         } else {
             gameState.tttCurrentPlayer = gameState.tttCurrentPlayer === 'X' ? 'O' : 'X';
@@ -457,46 +822,10 @@
         resetTicTacToe();
     }
 
-    // Друзі
-    function addF() {
-        const friendInput = document.getElementById('f-u');
-        const friend = friendInput.value.trim();
-        
-        if (!friend) return;
-        
-        if (!gameState.friends.includes(friend)) {
-            gameState.friends.push(friend);
-            document.getElementById('ttt-friend').innerHTML += `<option>${friend}</option>`;
-            updateFriendsList();
-            friendInput.value = '';
-        } else {
-            alert('Цей друг уже в списку!');
-        }
-    }
-
-    function updateFriendsList() {
-        const listDiv = document.getElementById('f-list');
-        listDiv.innerHTML = '';
-        
-        gameState.friends.forEach((friend, idx) => {
-            const div = document.createElement('div');
-            div.className = 'friend-item';
-            div.innerHTML = `<span>${friend}</span><button class="btn" onclick="removeFriend(${idx})" style="width:50px; background:var(--r);">✕</button>`;
-            listDiv.appendChild(div);
-        });
-    }
-
-    function removeFriend(idx) {
-        gameState.friends.splice(idx, 1);
-        updateFriendsList();
-    }
-
     // Конфіг
     function saveConfig() {
         const avatarUrl = document.getElementById('avatar-url').value || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + gameState.user;
         const username = document.getElementById('username-cfg').value;
-        
-        if (username) gameState.user = username;
         
         document.getElementById('h-a').src = avatarUrl;
         document.getElementById('h-u').textContent = gameState.user;
@@ -564,6 +893,9 @@
     // Збереження даних користувача
     function saveUserData() {
         allUsers[gameState.user].balance = gameState.balance;
+        allUsers[gameState.user].friends = gameState.friends;
+        allUsers[gameState.user].friendRequests = gameState.friendRequests;
+        allUsers[gameState.user].privateChatMessages = gameState.privateChatMessages;
         localStorage.setItem('stick_users', JSON.stringify(allUsers));
     }
 
@@ -580,28 +912,22 @@
                 balance: 0,
                 mining: false,
                 friends: [],
-                messages: [],
+                friendRequests: [],
+                privateChatMessages: {},
                 tttCurrentPlayer: 'X',
-                tttBoard: ['', '', '', '', '', '', '', '', '']
+                tttBoard: ['', '', '', '', '', '', '', '', ''],
+                currentChatFriend: null
             };
             
             document.getElementById('main-scr').style.display = 'none';
             document.getElementById('auth-scr').style.display = 'flex';
             document.getElementById('login-u').value = '';
             document.getElementById('login-p').value = '';
-            document.getElementById('chat').innerHTML = '';
         }
     }
 
     // Ініціалізація
     document.addEventListener('DOMContentLoaded', setupTicTacToe);
-
-    // Enter для чату
-    document.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter' && document.getElementById('msg-in') === document.activeElement) {
-            sendMsg();
-        }
-    });
 
     // Закриття модалі при натисканні на фон
     document.getElementById('change-password-modal').addEventListener('click', function(e) {
