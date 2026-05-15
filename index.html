@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>STICK FARM ULTRA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --p: #07FFFF; --bg: #050505; --card: #111; --g: #00ff88; --r: #ff3366; }
+        * { box-sizing: border-box; font-family: 'Orbitron', sans-serif; }
+        body { background: var(--bg); color: #fff; margin: 0; overflow: hidden; display: flex; flex-direction: column; height: 100vh; }
+        
+        .header { padding: 15px; display: flex; justify-content: space-between; border-bottom: 1px solid #222; align-items: center; background: #000; }
+        .avatar { width: 35px; height: 35px; border-radius: 50%; border: 1px solid var(--p); }
+
+        .view { flex: 1; padding: 20px; display: none; overflow-y: auto; padding-bottom: 80px; }
+        .view.active { display: block; }
+
+        .glass { background: var(--card); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #222; }
+        input { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #333; color: #fff; border-radius: 6px; }
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 6px; font-weight: 900; background: var(--p); cursor: pointer; text-transform: uppercase; }
+
+        /* Roulette */
+        .r-box { width: 180px; height: 180px; margin: 20px auto; border-radius: 50%; border: 5px solid #222; position: relative; transition: 4s cubic-bezier(0.1, 0, 0.1, 1); background: conic-gradient(var(--r) 0 170deg, var(--g) 170deg 190deg, #111 190deg 360deg); }
+        .r-box::after { content: '▼'; position: absolute; top: -15px; left: 50%; transform: translateX(-50%); color: gold; font-size: 20px; }
+
+        /* Chat */
+        #chat-out { height: 200px; overflow-y: auto; font-size: 12px; display: flex; flex-direction: column; gap: 5px; }
+        .m b { color: var(--p); }
+
+        nav { position: fixed; bottom: 0; width: 100%; display: grid; grid-template-columns: repeat(5, 1fr); background: #000; border-top: 1px solid #222; padding: 10px 0; }
+        .t { text-align: center; color: #444; font-size: 18px; cursor: pointer; }
+        .t.active { color: var(--p); }
+        .t span { display: block; font-size: 8px; text-transform: uppercase; }
+
+        .orb { width: 150px; height: 150px; border-radius: 50%; border: 4px solid var(--g); margin: 30px auto; display: flex; align-items: center; justify-content: center; font-weight: 900; transition: 0.3s; cursor: pointer; }
+        .orb.active { border-color: var(--r); box-shadow: 0 0 20px rgba(255,51,102,0.3); }
+    </style>
+</head>
+<body>
+
+<div id="auth" style="height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;">
+    <div class="glass" style="width:100%; max-width:320px; text-align:center;">
+        <h2 style="letter-spacing:5px;">STICK<span style="color:var(--p)">OS</span></h2>
+        <input type="text" id="user" placeholder="ЛОГІН">
+        <input type="password" id="pass" placeholder="ПАРОЛЬ">
+        <button class="btn" onclick="login()">УВІЙТИ</button>
+    </div>
+</div>
+
+<div id="main" style="display:none; flex-direction:column; height:100vh;">
+    <div class="header">
+        <div><small style="color:#555;">USER</small><br><b id="n-u">---</b></div>
+        <div style="text-align:right;"><small style="color:#555;">BALANCE</small><br><b id="n-b" style="color:var(--g);">0.00</b></div>
+        <img id="n-a" class="avatar" src="https://ui-avatars.com/api/?name=U&background=000&color=07FFFF">
+    </div>
+
+    <div id="v1" class="view active">
+        <h1 id="bal" style="text-align:center; font-size:3.5rem; margin:30px 0;">0.0000</h1>
+        <div id="mbtn" class="orb" onclick="mine()">START</div>
+    </div>
+
+    <div id="v2" class="view">
+        <h4>CHAT</h4>
+        <div id="chat-out" class="glass"></div>
+        <div style="display:flex; gap:5px;"><input type="text" id="msg" placeholder="..."><button onclick="send()" class="btn" style="width:60px;">></button></div>
+    </div>
+
+    <div id="v3" class="view">
+        <h4>CASINO</h4>
+        <div class="glass" style="text-align:center;">
+            <div id="wheel" class="r-box"></div>
+            <input type="number" id="bet" placeholder="СТАВКА">
+            <div style="display:flex; gap:5px;">
+                <button class="btn" style="background:var(--r)" onclick="roll('red')">RED</button>
+                <button class="btn" style="background:#000; border:1px solid #333" onclick="roll('black')">BLACK</button>
+                <button class="btn" style="background:var(--g)" onclick="roll('green')">ZERO</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="v4" class="view">
+        <h4>SQUAD</h4>
+        <input type="text" id="f-name" placeholder="Логін..."><button class="btn" onclick="addF()">ADD</button>
+        <div id="f-list" style="margin-top:15px;"></div>
+    </div>
+
+    <div id="v5" class="view">
+        <h4>SETTINGS</h4>
+        <div class="glass">
+            <input type="text" id="set-a" placeholder="AVATAR URL">
+            <input type="password" id="set-p" placeholder="НОВИЙ ПАРОЛЬ">
+            <button class="btn" onclick="save()">SAVE</button>
+        </div>
+        <button class="btn" style="background:var(--r)" onclick="location.reload()">LOGOUT</button>
+    </div>
+
+    <nav>
+        <div class="t active" onclick="tab('v1', 0)">⛏️<span>Mine</span></div>
+        <div class="t" onclick="tab('v2', 1)">💬<span>Chat</span></div>
+        <div class="t" onclick="tab('v3', 2)">🎰<span>Games</span></div>
+        <div class="t" onclick="tab('v4', 3)">👥<span>Squad</span></div>
+        <div class="t" onclick="tab('v5', 4)">⚙️<span>OS</span></div>
+    </nav>
+</div>
+
+<script>
+    const B="6a04f5aaadc21f119a979f14", K="$2a$10$7yePq6PbDAjjMpk4.gfkWeIOrhlJpxaX7Io9/IM0FevWs37W5eaea", U=`https://api.jsonbin.io/v3/b/${B}`;
+    let db, cur, bal=0, up=0, isM=false;
+
+    async function login() {
+        const u = document.getElementById('user').value.toLowerCase(), p = document.getElementById('pass').value;
+        const res = await fetch(U+"/latest", {headers:{"X-Master-Key":K, "X-Bin-Meta":"false"}});
+        db = await res.json();
+        if(db.users[u] && db.users[u].password === p) { cur=u; bal=db.users[u].balance||0; start(); } else alert("Error");
+    }
+
+    function start() {
+        document.getElementById('auth').style.display='none';
+        document.getElementById('main').style.display='flex';
+        document.getElementById('n-u').innerText = cur;
+        document.getElementById('n-a').src = db.users[cur].avatar || "";
+        setInterval(sync, 15000); sync(); tick();
+    }
+
+    async function sync() {
+        const res = await fetch(U+"/latest", {headers:{"X-Master-Key":K, "X-Bin-Meta":"false"}});
+        let f = await res.json();
+        bal = f.users[cur].balance; f.users[cur].
