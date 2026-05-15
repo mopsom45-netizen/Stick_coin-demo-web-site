@@ -12,13 +12,14 @@
         
         /* Стилізація елементів */
         .glass { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid #222; margin-bottom: 15px; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; }
-        .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: 900; background: var(--p); color: #000; cursor: pointer; text-transform: uppercase; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; font-family: 'Orbitron', sans-serif; }
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: 900; background: var(--p); color: #000; cursor: pointer; text-transform: uppercase; font-family: 'Orbitron', sans-serif; }
         .btn:active { transform: scale(0.98); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* Шапка */
         .header { padding: 15px 20px; display: flex; justify-content: space-between; border-bottom: 1px solid #111; align-items: center; background: #000; }
-        .av { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--p); object-fit: cover; }
+        .av { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--p); object-fit: cover; background: #1a1a1a; }
 
         /* Вкладки */
         .view { flex: 1; padding: 20px; display: none; overflow-y: auto; padding-bottom: 90px; }
@@ -27,37 +28,45 @@
 
         /* Рулетка */
         .r-wrap { position: relative; width: 200px; height: 200px; margin: 20px auto; }
-        .r-box { width: 100%; height: 100%; border-radius: 50%; border: 5px solid #1a1a1a; transition: 5s cubic-bezier(0.1, 0, 0.1, 1); background: conic-gradient(var(--r) 0 170deg, var(--g) 170deg 190deg, #111 190deg 360deg); }
+        .r-box { width: 100%; height: 100%; border-radius: 50%; border: 5px solid #1a1a1a; transition: 5s cubic-bezier(0.1, 0, 0.1, 1); background: conic-gradient(var(--r) 0 170deg, var(--g) 170deg 190deg, var(--p) 190deg 360deg); }
+        .r-box.spin { transform: rotate(1800deg); }
         .r-wrap::after { content: '▼'; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); color: var(--gold); font-size: 20px; z-index: 5; }
 
         /* Хрестики-Нолики */
         .ttt { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; max-width: 210px; margin: 15px auto; }
-        .c { aspect-ratio: 1; background: #000; border: 1px solid #222; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; border-radius: 5px; }
+        .c { aspect-ratio: 1; background: #000; border: 1px solid #222; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; border-radius: 5px; cursor: pointer; transition: 0.2s; }
+        .c:hover { border-color: var(--p); }
 
         /* Чат */
-        #chat { height: 200px; overflow-y: auto; font-size: 13px; margin-bottom: 10px; }
-        .m { margin-bottom: 5px; } .m b { color: var(--p); }
+        #chat { height: 200px; overflow-y: auto; font-size: 13px; margin-bottom: 10px; padding: 10px; }
+        .m { margin-bottom: 5px; padding: 5px; background: #000; border-radius: 5px; } 
+        .m b { color: var(--p); }
 
         /* Навігація */
         nav { position: fixed; bottom: 0; width: 100%; display: grid; grid-template-columns: repeat(5, 1fr); background: #000; border-top: 1px solid #111; padding: 12px 0 25px; }
-        .tab { text-align: center; color: #444; font-size: 22px; cursor: pointer; }
+        .tab { text-align: center; color: #444; font-size: 22px; cursor: pointer; transition: 0.2s; }
         .tab.active { color: var(--p); }
         .tab span { display: block; font-size: 8px; text-transform: uppercase; margin-top: 4px; }
 
         /* Майнінг */
-        .orb { width: 160px; height: 160px; border-radius: 50%; border: 4px solid var(--g); margin: 30px auto; display: flex; align-items: center; justify-content: center; font-weight: 900; cursor: pointer; box-shadow: 0 0 15px rgba(0,255,136,0.1); }
-        .orb.on { border-color: var(--r); animation: pulse 2s infinite; }
+        .orb { width: 160px; height: 160px; border-radius: 50%; border: 4px solid var(--g); margin: 30px auto; display: flex; align-items: center; justify-content: center; font-weight: 900; cursor: pointer; font-size: 14px; text-align: center; padding: 10px; transition: 0.3s; }
+        .orb:hover { transform: scale(1.05); }
+        .orb.on { border-color: var(--r); animation: pulse 2s infinite; background: rgba(255, 51, 102, 0.1); }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+        .friend-item { background: #000; padding: 10px; border-radius: 8px; margin: 8px 0; display: flex; justify-content: space-between; align-items: center; border: 1px solid #222; }
+        .friend-item button { width: 60px; padding: 8px; font-size: 11px; }
     </style>
 </head>
 <body>
 
 <div id="auth-scr" style="height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;">
     <div class="glass" style="width:100%; max-width:320px; text-align:center;">
-        <h2 style="letter-spacing:5px;">STICK<span style="color:var(--p)">FARM</span></h2>
+        <h2 style="letter-spacing:5px; margin-bottom:30px;">STICK<span style="color:var(--p)">FARM</span></h2>
         <input type="text" id="login-u" placeholder="ЛОГІН">
         <input type="password" id="login-p" placeholder="ПАРОЛЬ">
         <button class="btn" onclick="auth()">УВІЙТИ</button>
+        <p style="font-size:11px; color:#555; margin-top:20px;">Test: user / pass</p>
     </div>
 </div>
 
@@ -65,12 +74,13 @@
     <div class="header">
         <div><small style="color:#555;">OPERATOR</small><br><b id="h-u">---</b></div>
         <div style="text-align:right;"><small style="color:#555;">BALANCE</small><br><b id="h-b" style="color:var(--g);">0.0000</b></div>
-        <img id="h-a" class="av" src="">
+        <img id="h-a" class="av" src="https://api.dicebear.com/7.x/avataaars/svg?seed=default" alt="avatar">
     </div>
 
     <div id="tab1" class="view active">
         <h1 id="v-bal" style="text-align:center; font-size:3.5rem; margin:30px 0; font-weight:900;">0.0000</h1>
         <div id="mbtn" class="orb" onclick="toggleMine()">START MINING</div>
+        <div style="text-align:center; font-size:12px; color:#555;">+0.0001 STICK/сек</div>
     </div>
 
     <div id="tab2" class="view">
@@ -78,30 +88,32 @@
         <div id="chat" class="glass"></div>
         <div style="display:flex; gap:8px;">
             <input type="text" id="msg-in" placeholder="Повідомлення...">
-            <button class="btn" style="width:70px;" onclick="sendMsg()">></button>
+            <button class="btn" style="width:70px; padding:12px;" onclick="sendMsg()">></button>
         </div>
     </div>
 
     <div id="tab3" class="view">
         <h3 style="margin-top:0;">CASINO</h3>
         <div class="glass" style="text-align:center;">
+            <p style="margin:0 0 10px; font-size:12px; color:#555;">РУЛЕТКА</p>
             <div class="r-wrap"><div id="wheel" class="r-box"></div></div>
-            <input type="number" id="bet-amt" placeholder="СТАВКА">
+            <input type="number" id="bet-amt" placeholder="СТАВКА" min="0.0001" step="0.0001">
             <div style="display:flex; gap:5px;">
                 <button class="btn" style="background:var(--r); color:#fff;" onclick="spin('red')">RED</button>
-                <button class="btn" style="background:#000; border:1px solid #333;" onclick="spin('black')">BLACK</button>
+                <button class="btn" style="background:#111; border:1px solid #333; color:#fff;" onclick="spin('black')">BLACK</button>
                 <button class="btn" style="background:var(--g); color:#000;" onclick="spin('green')">0</button>
             </div>
         </div>
         <h3>TIC-TAC-TOE</h3>
         <div class="glass">
             <select id="ttt-friend"><option>Оберіть друга...</option></select>
-            <button class="btn" onclick="alert('Запит надіслано!')">ВИКЛИКАТИ НА ГРУ</button>
-            <div class="ttt">
-                <div class="c" onclick="this.innerText='X'"></div><div class="c" onclick="this.innerText='O'"></div><div class="c"></div>
-                <div class="c"></div><div class="c"></div><div class="c"></div>
-                <div class="c"></div><div class="c"></div><div class="c"></div>
+            <button class="btn" onclick="challengeFriend()">ВИКЛИКАТИ НА ГРУ</button>
+            <div class="ttt" id="ttt-board">
+                <div class="c" data-idx="0"></div><div class="c" data-idx="1"></div><div class="c" data-idx="2"></div>
+                <div class="c" data-idx="3"></div><div class="c" data-idx="4"></div><div class="c" data-idx="5"></div>
+                <div class="c" data-idx="6"></div><div class="c" data-idx="7"></div><div class="c" data-idx="8"></div>
             </div>
+            <button class="btn" onclick="resetTicTacToe()" style="margin-top:10px; font-size:12px;">ОЧИСТИТИ</button>
         </div>
     </div>
 
@@ -109,7 +121,7 @@
         <h3>SQUAD</h3>
         <div style="display:flex; gap:8px;">
             <input type="text" id="f-u" placeholder="Логін...">
-            <button class="btn" style="width:80px;" onclick="addF()">ADD</button>
+            <button class="btn" style="width:80px; padding:12px;" onclick="addF()">ADD</button>
         </div>
         <div id="f-list" style="margin-top:20px;"></div>
     </div>
@@ -118,4 +130,291 @@
         <h3>OS CONFIG</h3>
         <div class="glass">
             <label style="font-size:10px; color:var(--p);">AVATAR URL</label>
-            <input type="text"
+            <input type="text" id="avatar-url" placeholder="https://...">
+            <label style="font-size:10px; color:var(--p); margin-top:15px;">USERNAME</label>
+            <input type="text" id="username-cfg" placeholder="Ваше імя">
+            <button class="btn" onclick="saveConfig()" style="margin-top:15px;">ЗБЕРЕГТИ</button>
+            <button class="btn" onclick="logout()" style="background:var(--r); color:#fff; margin-top:10px;">ВИХІД</button>
+        </div>
+    </div>
+
+    <nav>
+        <div class="tab active" onclick="switchTab(1)">⛏️<span>Mining</span></div>
+        <div class="tab" onclick="switchTab(2)">💬<span>Chat</span></div>
+        <div class="tab" onclick="switchTab(3)">🎰<span>Casino</span></div>
+        <div class="tab" onclick="switchTab(4)">👥<span>Squad</span></div>
+        <div class="tab" onclick="switchTab(5)">⚙️<span>Config</span></div>
+    </nav>
+</div>
+
+<script>
+    // Глобальні змінні
+    let gameState = {
+        user: null,
+        balance: 0,
+        mining: false,
+        friends: [],
+        messages: [],
+        tttCurrentPlayer: 'X',
+        tttBoard: ['', '', '', '', '', '', '', '', '']
+    };
+
+    // Автентифікація
+    function auth() {
+        const username = document.getElementById('login-u').value;
+        const password = document.getElementById('login-p').value;
+
+        if (!username || !password) {
+            alert('Заповніть всі поля!');
+            return;
+        }
+
+        if (username === 'user' && password === 'pass') {
+            gameState.user = username;
+            gameState.balance = 100;
+            
+            document.getElementById('auth-scr').style.display = 'none';
+            document.getElementById('main-scr').style.display = 'flex';
+            
+            updateHeader();
+            addMessage('SYSTEM', 'Ви успішно увійшли! 🎉');
+        } else {
+            alert('Неправильні облікові дані!');
+        }
+    }
+
+    // Оновлення заголовка
+    function updateHeader() {
+        document.getElementById('h-u').textContent = gameState.user || '---';
+        document.getElementById('h-b').textContent = gameState.balance.toFixed(4);
+        document.getElementById('v-bal').textContent = gameState.balance.toFixed(4);
+    }
+
+    // Майнінг
+    function toggleMine() {
+        const btn = document.getElementById('mbtn');
+        gameState.mining = !gameState.mining;
+        
+        if (gameState.mining) {
+            btn.classList.add('on');
+            btn.textContent = 'MINING...';
+            
+            const mineInterval = setInterval(() => {
+                if (!gameState.mining) {
+                    clearInterval(mineInterval);
+                    btn.classList.remove('on');
+                    btn.textContent = 'START MINING';
+                    return;
+                }
+                gameState.balance += 0.0001;
+                updateHeader();
+            }, 1000);
+        } else {
+            btn.classList.remove('on');
+            btn.textContent = 'START MINING';
+            clearInterval(mineInterval);
+        }
+    }
+
+    // Чат
+    function sendMsg() {
+        const msgInput = document.getElementById('msg-in');
+        const msg = msgInput.value.trim();
+        
+        if (!msg) return;
+        
+        addMessage(gameState.user, msg);
+        msgInput.value = '';
+    }
+
+    function addMessage(sender, text) {
+        const chatDiv = document.getElementById('chat');
+        const msgEl = document.createElement('div');
+        msgEl.className = 'm';
+        msgEl.innerHTML = `<b>${sender}:</b> ${text}`;
+        chatDiv.appendChild(msgEl);
+        chatDiv.scrollTop = chatDiv.scrollHeight;
+    }
+
+    // Рулетка
+    function spin(color) {
+        const betAmount = parseFloat(document.getElementById('bet-amt').value);
+        
+        if (!betAmount || betAmount <= 0) {
+            alert('Введіть ставку!');
+            return;
+        }
+        
+        if (betAmount > gameState.balance) {
+            alert('Недостатньо коштів!');
+            return;
+        }
+
+        gameState.balance -= betAmount;
+        const wheel = document.getElementById('wheel');
+        const result = Math.random();
+        
+        wheel.classList.remove('spin');
+        void wheel.offsetWidth;
+        wheel.classList.add('spin');
+
+        setTimeout(() => {
+            let winColor;
+            if (result < 0.48) winColor = 'red';
+            else if (result < 0.96) winColor = 'black';
+            else winColor = 'green';
+
+            if (winColor === color) {
+                const winAmount = betAmount * (color === 'green' ? 14 : 2);
+                gameState.balance += winAmount;
+                addMessage('CASINO', `🎉 ВИ ВИГРАЛИ ${winAmount.toFixed(4)} STICK!`);
+            } else {
+                addMessage('CASINO', `❌ Ви програли ${betAmount.toFixed(4)} STICK`);
+            }
+            
+            updateHeader();
+            wheel.classList.remove('spin');
+        }, 5000);
+    }
+
+    // Хрестики-Нолики
+    function setupTicTacToe() {
+        const cells = document.querySelectorAll('.ttt .c');
+        cells.forEach(cell => {
+            cell.addEventListener('click', function() {
+                if (this.textContent || gameState.tttBoard[this.dataset.idx]) return;
+                
+                const idx = this.dataset.idx;
+                gameState.tttBoard[idx] = gameState.tttCurrentPlayer;
+                this.textContent = gameState.tttCurrentPlayer;
+                
+                if (checkTTTWin()) {
+                    addMessage('TTT', `🏆 ${gameState.tttCurrentPlayer} переміг!`);
+                    resetTicTacToe();
+                } else {
+                    gameState.tttCurrentPlayer = gameState.tttCurrentPlayer === 'X' ? 'O' : 'X';
+                }
+            });
+        });
+    }
+
+    function checkTTTWin() {
+        const b = gameState.tttBoard;
+        const lines = [
+            [0,1,2], [3,4,5], [6,7,8],
+            [0,3,6], [1,4,7], [2,5,8],
+            [0,4,8], [2,4,6]
+        ];
+        
+        for (let line of lines) {
+            if (b[line[0]] && b[line[0]] === b[line[1]] && b[line[1]] === b[line[2]]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function resetTicTacToe() {
+        gameState.tttBoard = ['', '', '', '', '', '', '', '', ''];
+        gameState.tttCurrentPlayer = 'X';
+        document.querySelectorAll('.ttt .c').forEach(cell => {
+            cell.textContent = '';
+        });
+    }
+
+    function challengeFriend() {
+        const friend = document.getElementById('ttt-friend').value;
+        if (friend === 'Оберіть друга...') {
+            alert('Оберіть друга!');
+            return;
+        }
+        alert(`Запит надіслано до ${friend}! 🎮`);
+        resetTicTacToe();
+    }
+
+    // Друзі
+    function addF() {
+        const friendInput = document.getElementById('f-u');
+        const friend = friendInput.value.trim();
+        
+        if (!friend) return;
+        
+        if (!gameState.friends.includes(friend)) {
+            gameState.friends.push(friend);
+            document.getElementById('ttt-friend').innerHTML += `<option>${friend}</option>`;
+            updateFriendsList();
+            friendInput.value = '';
+        }
+    }
+
+    function updateFriendsList() {
+        const listDiv = document.getElementById('f-list');
+        listDiv.innerHTML = '';
+        
+        gameState.friends.forEach((friend, idx) => {
+            const div = document.createElement('div');
+            div.className = 'friend-item';
+            div.innerHTML = `<span>${friend}</span><button class="btn" onclick="removeFriend(${idx})" style="width:50px; background:var(--r);">✕</button>`;
+            listDiv.appendChild(div);
+        });
+    }
+
+    function removeFriend(idx) {
+        gameState.friends.splice(idx, 1);
+        updateFriendsList();
+    }
+
+    // Конфіг
+    function saveConfig() {
+        const avatarUrl = document.getElementById('avatar-url').value || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default';
+        const username = document.getElementById('username-cfg').value;
+        
+        if (username) gameState.user = username;
+        
+        document.getElementById('h-a').src = avatarUrl;
+        document.getElementById('h-u').textContent = gameState.user;
+        
+        alert('Конфіг збережено! ✓');
+    }
+
+    // Перемикання вкладок
+    function switchTab(tabNum) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        
+        document.getElementById('tab' + tabNum).classList.add('active');
+        document.querySelectorAll('.tab')[tabNum - 1].classList.add('active');
+    }
+
+    // Вихід
+    function logout() {
+        if (confirm('Ви впевнені?')) {
+            gameState = {
+                user: null,
+                balance: 0,
+                mining: false,
+                friends: [],
+                messages: [],
+                tttCurrentPlayer: 'X',
+                tttBoard: ['', '', '', '', '', '', '', '', '']
+            };
+            
+            document.getElementById('main-scr').style.display = 'none';
+            document.getElementById('auth-scr').style.display = 'flex';
+            document.getElementById('login-u').value = '';
+            document.getElementById('login-p').value = '';
+        }
+    }
+
+    // Ініціалізація
+    document.addEventListener('DOMContentLoaded', setupTicTacToe);
+
+    // Enter для чату
+    document.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && document.getElementById('msg-in') === document.activeElement) {
+            sendMsg();
+        }
+    });
+</script>
+</body>
+</html>
